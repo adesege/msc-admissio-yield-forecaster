@@ -1,7 +1,7 @@
 import pandas as pd
 
 from src.fairness.audit import error_ratio_vs_rest
-from src.features.panel import build_panel
+from src.features.panel import build_panel, has_full_yield_history
 from src.ingest.ipeds import load_admissions, load_directory
 
 
@@ -38,8 +38,7 @@ def evaluate(forecast: pd.DataFrame) -> dict:
 
 def main(target_year: int = 2024) -> dict:
     panel = build_panel(load_admissions(), load_directory())
-    has_history = panel.groupby("UNITID")["YIELD"].transform(lambda s: s.notna().all() and len(s) == 3)
-    results = evaluate(naive_yield_forecast(panel[has_history], target_year))
+    results = evaluate(naive_yield_forecast(panel[has_full_yield_history(panel)], target_year))
     for key, value in results.items():
         print(f"{key}: {value}")
     return results

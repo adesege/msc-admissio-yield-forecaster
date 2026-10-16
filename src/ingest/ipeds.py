@@ -1,8 +1,12 @@
+import hashlib
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
 
-RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw" / "ipeds"
+from src.config import default_paths
+
+RAW_DIR = default_paths().raw_dir
 
 ADMISSIONS_FILES = {
     2022: "adm2022_rv.csv",
@@ -12,11 +16,43 @@ ADMISSIONS_FILES = {
 DIRECTORY_FILE = "hd2023.csv"
 
 FUNNEL_COLUMNS = ["APPLCN", "ADMSSN", "ENRLT"]
+GENDER_SPLIT_COLUMNS = {
+    "APPLCN": ["APPLCNM", "APPLCNW", "APPLCNAN", "APPLCNUN"],
+    "ADMSSN": ["ADMSSNM", "ADMSSNW", "ADMSSNAN", "ADMSSNUN"],
+    "ENRLT": ["ENRLM", "ENRLW", "ENRLAN", "ENRLUN"],
+}
 ADMISSIONS_COLUMNS = ["UNITID", *FUNNEL_COLUMNS, "ADMCON7"]
 DIRECTORY_COLUMNS = [
     "UNITID", "INSTNM", "STABBR", "OBEREG", "SECTOR", "CONTROL",
     "HBCU", "TRIBAL", "LOCALE", "INSTSIZE", "C21BASIC",
 ]
+
+
+@dataclass(frozen=True)
+class LandedFile:
+    name: str
+    path: Path
+    sha256: str
+    size_bytes: int
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def land_raw_files(raw_dir: Path = RAW_DIR) -> list[LandedFile]:
+    expected = [*ADMISSIONS_FILES.values(), DIRECTORY_FILE]
+    missing = [name for name in expected if not (raw_dir / name).exists()]
+    if missing:
+        raise FileNotFoundError(f"Raw IPEDS files missing from {raw_dir}: {', '.join(missing)}")
+    return [
+        LandedFile(name, raw_dir / name, file_sha256(raw_dir / name), (raw_dir / name).stat().st_size)
+        for name in expected
+    ]
 
 
 def read_ipeds_csv(path: Path) -> pd.DataFrame:
@@ -26,11 +62,15 @@ def read_ipeds_csv(path: Path) -> pd.DataFrame:
     return df
 
 
-def load_admissions(raw_dir: Path = RAW_DIR, years=None) -> pd.DataFrame:
+def load_admissions(raw_dir: Path = RAW_DIR, years=None, include_gender_splits: bool = False) -> pd.DataFrame:
+    columns = list(ADMISSIONS_COLUMNS)
+    if include_gender_splits:
+        columns += [col for parts in GENDER_SPLIT_COLUMNS.values() for col in parts]
+    numeric_columns = [col for col in columns if col != "UNITID"]
     frames = []
     for year in years or ADMISSIONS_FILES:
-        df = read_ipeds_csv(raw_dir / ADMISSIONS_FILES[year])[ADMISSIONS_COLUMNS].copy()
-        for col in [*FUNNEL_COLUMNS, "ADMCON7"]:
+        df = read_ipeds_csv(raw_dir / ADMISSIONS_FILES[year])[columns].copy()
+        for col in numeric_columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype(float)
         df["YEAR"] = year
         frames.append(df)
