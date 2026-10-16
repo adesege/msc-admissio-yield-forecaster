@@ -2,7 +2,12 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+.prefect/
 mlruns/
+data/interim/
 data/processed/*
 !data/processed/.gitkeep
+reports/
+logs/
 .DS_Store
+output/processed
