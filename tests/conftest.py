@@ -23,3 +23,30 @@ def yield_panel(raw_admissions, raw_directory) -> pd.DataFrame:
     panel = build_panel(admissions, directory)
     panel["FULL_YIELD_HISTORY"] = has_full_yield_history(panel)
     return panel
+
+
+@pytest.fixture(scope="session")
+def modelling_data(yield_panel):
+    from src.models.dataset import prepare_modelling_data
+
+    return prepare_modelling_data(yield_panel[yield_panel["FULL_YIELD_HISTORY"]])
+
+
+@pytest.fixture(scope="session")
+def small_forecaster(modelling_data):
+    from lightgbm import LGBMRegressor
+    from sklearn.pipeline import Pipeline
+
+    from src.models.features import build_preprocessor
+    from src.models.forecaster import YieldForecaster
+
+    change_model = Pipeline(
+        [
+            ("prepare", build_preprocessor(scale_numeric=False)),
+            ("model", LGBMRegressor(n_estimators=60, num_leaves=15, objective="l1", random_state=0, verbose=-1)),
+        ]
+    )
+    train = modelling_data.train
+    forecaster = YieldForecaster(change_model).fit(train, train["YIELD"])
+    residuals = train["YIELD"] - forecaster.predict(train)
+    return forecaster.calibrate_intervals(residuals.to_numpy(), modelling_data.train_groups)
