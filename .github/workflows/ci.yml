@@ -17,3 +17,12 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest -q
       - run: python -m src.models.baseline
+
+  pipeline-image:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag admissio-pipeline .
+      - run: docker run --rm admissio-pipeline python -m pytest -q
+      - run: docker run --rm admissio-pipeline
