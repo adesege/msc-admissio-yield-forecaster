@@ -16,6 +16,8 @@ Integrated Postsecondary Education Data System (IPEDS), National Center for Educ
 - 89 records report applicants without usable admit or enrolment counts.
 - Gender splits exist for every funnel stage; race and ethnicity splits do not.
 - Two tribal colleges appear in 2023, too few for group-level evaluation.
+- Twelve admissions rows have no 2023 directory record and are quarantined.
+- Filtering to institutions with full yield history keeps 77.7% of private for-profit rows against 95.0% of private nonprofit rows, so for-profit institutions are under-represented in the modelling set.
 
 ## Intended use
 

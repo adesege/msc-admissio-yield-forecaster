@@ -54,7 +54,20 @@ Preliminary schema for every source used by the Admissio Yield Forecaster. Raw I
 | `YIELD_LAG1` | Float | Previous year's yield for the same institution | Naive baseline and feature |
 | `APPLCN_CHANGE` | Float | Year-on-year proportional change in applicants | Feature |
 | `TEST_POLICY_CHANGED` | Boolean | `ADMCON7` differs from the previous year | Feature |
-| `SIZE_GROUP`, `CONTROL_GROUP`, `HBCU_GROUP` | Text | Labelled fairness groups | Fairness audit |
+| `SIZE_GROUP`, `CONTROL_GROUP`, `HBCU_GROUP`, `TRIBAL_GROUP` | Text | Labelled fairness groups | Fairness audit and bias detection |
+| `FUNNEL_COMPLETE` | Boolean | Applicants, admits and enrolled all reported, with admits above zero | Data-quality flag |
+| `FULL_YIELD_HISTORY` | Boolean | Usable yield in every year of the panel | Modelling eligibility |
+
+## Pipeline outputs (`data/processed/warehouse.duckdb`)
+
+| Table or view | Grain | Rows (2022 to 2024) | Purpose |
+|---|---|---|---|
+| `analytics.yield_panel` | Institution-year | 5,908 | Validated panel for analysis |
+| `analytics.model_ready_panel` | Institution-year | 5,556 | View of institutions with full yield history, the Module 4 training input |
+| `quarantine.admissions` | Institution-year | 12 | Rows with no directory record, held back with the reason |
+| `public.funnel_by_gender` | Institution-year | 5,908 | Gender funnel counts after small-cell suppression |
+| `reports.representation` | Group | 12 | Bias detection results |
+| `analytics.partner_aggregates` | Tenant-cycle-programme | Varies | Anonymised partner counts |
 
 ## Planned Admissio partner aggregates
 
