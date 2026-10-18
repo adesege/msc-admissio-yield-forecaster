@@ -1,0 +1,88 @@
+version: 1
+owner: Admissio data engineering
+approver: Ethics Review Panel
+
+roles:
+  pipeline_service: Automated service account that runs the scheduled pipeline
+  data_engineer: Maintains the pipeline, schemas and validation suites
+  analyst: Builds and evaluates forecasting models
+  ethics_review_panel: Reviews fairness, privacy and release decisions
+  partner_admin: Admissions staff at one partner institution, scoped to its own tenant
+
+datasets:
+  ipeds_raw:
+    classification: public
+    description: Unmodified NCES IPEDS admissions and directory files
+    retention: {rule: keep_indefinitely}
+    access:
+      pipeline_service: [read]
+      data_engineer: [read, write]
+      analyst: [read]
+      ethics_review_panel: [read]
+
+  quarantine:
+    classification: internal
+    description: Admissions rows held back from the panel with the reason recorded
+    retention: {rule: keep_latest, versions: 2}
+    access:
+      pipeline_service: [write, delete]
+      data_engineer: [read]
+      ethics_review_panel: [read]
+
+  yield_panel:
+    classification: internal
+    description: Cleaned, validated institution-year panel used for modelling
+    retention: {rule: keep_latest, versions: 2}
+    access:
+      pipeline_service: [read, write, delete]
+      data_engineer: [read]
+      analyst: [read]
+      ethics_review_panel: [read]
+
+  public_funnel:
+    classification: public
+    description: Funnel counts by gender after small-cell suppression, safe for dashboards
+    retention: {rule: keep_latest, versions: 2}
+    access:
+      pipeline_service: [write, delete]
+      data_engineer: [read]
+      analyst: [read]
+      ethics_review_panel: [read]
+      partner_admin: [read]
+
+  representation_report:
+    classification: internal
+    description: Group representation and attrition results from the bias detection suite
+    retention: {rule: keep_latest, versions: 2}
+    access:
+      pipeline_service: [write, delete]
+      data_engineer: [read]
+      analyst: [read]
+      ethics_review_panel: [read]
+
+  partner_extract:
+    classification: confidential
+    description: Applicant-level partner export containing personal data; never leaves the anonymisation step
+    retention: {rule: delete_after_run}
+    access:
+      pipeline_service: [read, anonymise, delete]
+      partner_admin: [write]
+
+  partner_aggregates:
+    classification: internal
+    description: Pseudonymised tenant-cycle-programme counts with no direct identifiers
+    retention: {rule: keep_latest, versions: 2}
+    access:
+      pipeline_service: [write, delete]
+      data_engineer: [read]
+      analyst: [read]
+      ethics_review_panel: [read]
+
+  audit_log:
+    classification: restricted
+    description: Append-only record of every data access and transformation
+    retention: {rule: max_age_days, days: 1095}
+    access:
+      pipeline_service: [append, delete]
+      data_engineer: [read]
+      ethics_review_panel: [read]

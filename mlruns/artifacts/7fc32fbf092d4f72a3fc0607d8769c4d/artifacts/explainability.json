@@ -1,0 +1,514 @@
+{
+  "model_comparison": [
+    {
+      "model": "Naive baseline",
+      "cv_mae": NaN,
+      "holdout_mae": 5.99
+    },
+    {
+      "model": "Ridge regression",
+      "cv_mae": 5.92,
+      "holdout_mae": 5.86
+    },
+    {
+      "model": "Random forest",
+      "cv_mae": 5.59,
+      "holdout_mae": 5.51
+    },
+    {
+      "model": "LightGBM",
+      "cv_mae": 5.48,
+      "holdout_mae": 5.23
+    },
+    {
+      "model": "Selected: LightGBM, group reweighted",
+      "cv_mae": 5.72,
+      "holdout_mae": 5.33
+    }
+  ],
+  "shap": {
+    "mean_abs_shap_points": {
+      "Last cycle's yield": 2.046,
+      "Change in applicants": 2.028,
+      "Applicant volume (log)": 1.949,
+      "Admit rate this cycle": 1.208,
+      "Last cycle's admit rate": 1.056,
+      "Locale": 0.285,
+      "Region": 0.251,
+      "Carnegie class": 0.196,
+      "Institution control": 0.182,
+      "Enrolment size band": 0.173,
+      "Test-score policy": 0.14,
+      "Test policy changed": 0.051
+    },
+    "mean_abs_shap_points_by_group": {
+      "All other institutions": {
+        "Last cycle's yield": 1.263,
+        "Admit rate this cycle": 1.16,
+        "Last cycle's admit rate": 0.943,
+        "Change in applicants": 1.386,
+        "Applicant volume (log)": 1.43,
+        "Test policy changed": 0.031,
+        "Test-score policy": 0.105,
+        "Institution control": 0.131,
+        "Enrolment size band": 0.185,
+        "Locale": 0.17,
+        "Region": 0.197,
+        "Carnegie class": 0.136
+      },
+      "HBCU": {
+        "Last cycle's yield": 1.503,
+        "Admit rate this cycle": 1.173,
+        "Last cycle's admit rate": 0.992,
+        "Change in applicants": 2.189,
+        "Applicant volume (log)": 1.406,
+        "Test policy changed": 0.042,
+        "Test-score policy": 0.083,
+        "Institution control": 0.148,
+        "Enrolment size band": 0.197,
+        "Locale": 0.227,
+        "Region": 0.21,
+        "Carnegie class": 0.154
+      },
+      "Private for-profit": {
+        "Last cycle's yield": 4.083,
+        "Admit rate this cycle": 1.388,
+        "Last cycle's admit rate": 1.285,
+        "Change in applicants": 3.961,
+        "Applicant volume (log)": 3.513,
+        "Test policy changed": 0.081,
+        "Test-score policy": 0.255,
+        "Institution control": 0.6,
+        "Enrolment size band": 0.18,
+        "Locale": 0.645,
+        "Region": 0.469,
+        "Carnegie class": 0.343
+      },
+      "Under 1,000 students": {
+        "Last cycle's yield": 3.44,
+        "Admit rate this cycle": 1.277,
+        "Last cycle's admit rate": 1.276,
+        "Change in applicants": 3.039,
+        "Applicant volume (log)": 2.835,
+        "Test policy changed": 0.093,
+        "Test-score policy": 0.201,
+        "Institution control": 0.195,
+        "Enrolment size band": 0.139,
+        "Locale": 0.468,
+        "Region": 0.326,
+        "Carnegie class": 0.306
+      }
+    }
+  },
+  "lime": {
+    "HBCU": {
+      "institution": "Morgan State University",
+      "unitid": 163453,
+      "actual_yield": 0.1237118767565317,
+      "last_cycle_yield": 0.12096474953617811,
+      "forecast_yield": 0.11297673712424913,
+      "local_model_intercept": 0.43855928698416013,
+      "local_model_r2": 0.29029265038983887,
+      "weights": [
+        {
+          "rule": "Last cycle's yield <= 0.17",
+          "weight_points": -29.54
+        },
+        {
+          "rule": "Applicant volume (log) > 8.95",
+          "weight_points": -3.2
+        },
+        {
+          "rule": "-0.05 < Change in applicants <= 0.05",
+          "weight_points": 1.97
+        },
+        {
+          "rule": "0.78 < Last cycle's admit rate <= 0.90",
+          "weight_points": 1.81
+        },
+        {
+          "rule": "0.78 < Admit rate this cycle <= 0.91",
+          "weight_points": -1.3
+        },
+        {
+          "rule": "Institution control=public",
+          "weight_points": 0.75
+        }
+      ]
+    },
+    "Small for-profit": {
+      "institution": "St Louis College of Health Careers-Fenton",
+      "unitid": 442426,
+      "actual_yield": 0.6071428571428571,
+      "last_cycle_yield": 0.7777777777777778,
+      "forecast_yield": 0.7351329591325289,
+      "local_model_intercept": 0.24234724583415282,
+      "local_model_r2": 0.802444502403515,
+      "weights": [
+        {
+          "rule": "Last cycle's yield > 0.50",
+          "weight_points": 49.81
+        },
+        {
+          "rule": "Change in applicants > 0.19",
+          "weight_points": -7.75
+        },
+        {
+          "rule": "Applicant volume (log) <= 6.14",
+          "weight_points": 7.62
+        },
+        {
+          "rule": "Last cycle's admit rate > 0.90",
+          "weight_points": 2.6
+        },
+        {
+          "rule": "0.78 < Admit rate this cycle <= 0.91",
+          "weight_points": -1.75
+        },
+        {
+          "rule": "Enrolment size band=under 1,000",
+          "weight_points": -0.64
+        }
+      ]
+    },
+    "Large public": {
+      "institution": "University of Illinois Chicago",
+      "unitid": 145600,
+      "actual_yield": 0.2109207197747124,
+      "last_cycle_yield": 0.23287396642445501,
+      "forecast_yield": 0.2324496229602001,
+      "local_model_intercept": 0.4134595044752539,
+      "local_model_r2": 0.12068139983118586,
+      "weights": [
+        {
+          "rule": "0.17 < Last cycle's yield <= 0.25",
+          "weight_points": -18.76
+        },
+        {
+          "rule": "Applicant volume (log) > 8.95",
+          "weight_points": -2.93
+        },
+        {
+          "rule": "0.61 < Admit rate this cycle <= 0.78",
+          "weight_points": 1.42
+        },
+        {
+          "rule": "Institution control=public",
+          "weight_points": -0.79
+        },
+        {
+          "rule": "0.78 < Last cycle's admit rate <= 0.90",
+          "weight_points": 0.65
+        },
+        {
+          "rule": "0.05 < Change in applicants <= 0.19",
+          "weight_points": 0.53
+        }
+      ]
+    }
+  },
+  "counterfactuals": {
+    "HBCU": {
+      "institution": "Morgan State University",
+      "applicants": 23366,
+      "current_offers": 19214,
+      "current_admit_rate": 0.822,
+      "current_forecast_yield": 0.113,
+      "current_implied_enrolled": 2171,
+      "target_yield_range": [
+        0.121,
+        0.171
+      ],
+      "options": [
+        {
+          "ADMIT_RATE": 0.5,
+          "offers": 11683,
+          "forecast_yield": 0.1332,
+          "implied_enrolled": 1556
+        },
+        {
+          "ADMIT_RATE": 0.4,
+          "offers": 9346,
+          "forecast_yield": 0.1415,
+          "implied_enrolled": 1323
+        },
+        {
+          "ADMIT_RATE": 0.1,
+          "offers": 2337,
+          "forecast_yield": 0.1435,
+          "implied_enrolled": 335
+        }
+      ]
+    },
+    "Small for-profit": {
+      "institution": "St Louis College of Health Careers-Fenton",
+      "applicants": 70,
+      "current_offers": 56,
+      "current_admit_rate": 0.8,
+      "current_forecast_yield": 0.7351,
+      "current_implied_enrolled": 41,
+      "target_yield_range": [
+        0.7778,
+        0.8278
+      ],
+      "options": []
+    },
+    "Large public": {
+      "institution": "University of Illinois Chicago",
+      "applicants": 27085,
+      "current_offers": 20951,
+      "current_admit_rate": 0.774,
+      "current_forecast_yield": 0.2324,
+      "current_implied_enrolled": 4870,
+      "target_yield_range": [
+        0.2329,
+        0.2829
+      ],
+      "options": [
+        {
+          "ADMIT_RATE": 0.7,
+          "offers": 18960,
+          "forecast_yield": 0.2418,
+          "implied_enrolled": 4585
+        },
+        {
+          "ADMIT_RATE": 0.4,
+          "offers": 10834,
+          "forecast_yield": 0.2672,
+          "implied_enrolled": 2895
+        },
+        {
+          "ADMIT_RATE": 0.3,
+          "offers": 8126,
+          "forecast_yield": 0.2695,
+          "implied_enrolled": 2190
+        }
+      ]
+    }
+  },
+  "sensitivity": {
+    "perturbation": [
+      {
+        "feature": "Last cycle's yield",
+        "relative_change": -0.1,
+        "mean_abs_shift_points": 3.095,
+        "p95_abs_shift_points": 8.418
+      },
+      {
+        "feature": "Last cycle's yield",
+        "relative_change": -0.05,
+        "mean_abs_shift_points": 1.526,
+        "p95_abs_shift_points": 4.008
+      },
+      {
+        "feature": "Last cycle's yield",
+        "relative_change": 0.05,
+        "mean_abs_shift_points": 1.316,
+        "p95_abs_shift_points": 3.587
+      },
+      {
+        "feature": "Last cycle's yield",
+        "relative_change": 0.1,
+        "mean_abs_shift_points": 2.551,
+        "p95_abs_shift_points": 6.599
+      },
+      {
+        "feature": "Admit rate this cycle",
+        "relative_change": -0.1,
+        "mean_abs_shift_points": 0.84,
+        "p95_abs_shift_points": 2.526
+      },
+      {
+        "feature": "Admit rate this cycle",
+        "relative_change": -0.05,
+        "mean_abs_shift_points": 0.447,
+        "p95_abs_shift_points": 1.501
+      },
+      {
+        "feature": "Admit rate this cycle",
+        "relative_change": 0.05,
+        "mean_abs_shift_points": 0.351,
+        "p95_abs_shift_points": 1.236
+      },
+      {
+        "feature": "Admit rate this cycle",
+        "relative_change": 0.1,
+        "mean_abs_shift_points": 0.538,
+        "p95_abs_shift_points": 1.733
+      },
+      {
+        "feature": "Last cycle's admit rate",
+        "relative_change": -0.1,
+        "mean_abs_shift_points": 0.771,
+        "p95_abs_shift_points": 2.522
+      },
+      {
+        "feature": "Last cycle's admit rate",
+        "relative_change": -0.05,
+        "mean_abs_shift_points": 0.508,
+        "p95_abs_shift_points": 1.905
+      },
+      {
+        "feature": "Last cycle's admit rate",
+        "relative_change": 0.05,
+        "mean_abs_shift_points": 0.471,
+        "p95_abs_shift_points": 1.681
+      },
+      {
+        "feature": "Last cycle's admit rate",
+        "relative_change": 0.1,
+        "mean_abs_shift_points": 0.778,
+        "p95_abs_shift_points": 2.343
+      },
+      {
+        "feature": "Change in applicants",
+        "relative_change": -0.1,
+        "mean_abs_shift_points": 0.331,
+        "p95_abs_shift_points": 1.309
+      },
+      {
+        "feature": "Change in applicants",
+        "relative_change": -0.05,
+        "mean_abs_shift_points": 0.202,
+        "p95_abs_shift_points": 0.861
+      },
+      {
+        "feature": "Change in applicants",
+        "relative_change": 0.05,
+        "mean_abs_shift_points": 0.154,
+        "p95_abs_shift_points": 0.686
+      },
+      {
+        "feature": "Change in applicants",
+        "relative_change": 0.1,
+        "mean_abs_shift_points": 0.282,
+        "p95_abs_shift_points": 1.116
+      },
+      {
+        "feature": "Applicant volume (log)",
+        "relative_change": -0.1,
+        "mean_abs_shift_points": 0.877,
+        "p95_abs_shift_points": 2.826
+      },
+      {
+        "feature": "Applicant volume (log)",
+        "relative_change": -0.05,
+        "mean_abs_shift_points": 0.457,
+        "p95_abs_shift_points": 1.676
+      },
+      {
+        "feature": "Applicant volume (log)",
+        "relative_change": 0.05,
+        "mean_abs_shift_points": 0.458,
+        "p95_abs_shift_points": 1.593
+      },
+      {
+        "feature": "Applicant volume (log)",
+        "relative_change": 0.1,
+        "mean_abs_shift_points": 0.702,
+        "p95_abs_shift_points": 2.399
+      }
+    ],
+    "test_policy": [
+      {
+        "policy": "required",
+        "mean_shift_points": 0.13,
+        "mean_abs_shift_points": 0.417
+      },
+      {
+        "policy": "neither required nor recommended",
+        "mean_shift_points": 0.058,
+        "mean_abs_shift_points": 0.299
+      },
+      {
+        "policy": "considered but not required",
+        "mean_shift_points": 0.064,
+        "mean_abs_shift_points": 0.357
+      }
+    ],
+    "missing_input": [
+      {
+        "feature": "Change in applicants",
+        "mean_abs_shift_points": 2.218
+      },
+      {
+        "feature": "Admit rate this cycle",
+        "mean_abs_shift_points": 2.005
+      },
+      {
+        "feature": "Applicant volume (log)",
+        "mean_abs_shift_points": 1.826
+      },
+      {
+        "feature": "Last cycle's admit rate",
+        "mean_abs_shift_points": 1.298
+      },
+      {
+        "feature": "Locale",
+        "mean_abs_shift_points": 0.479
+      },
+      {
+        "feature": "Region",
+        "mean_abs_shift_points": 0.374
+      },
+      {
+        "feature": "Carnegie class",
+        "mean_abs_shift_points": 0.372
+      },
+      {
+        "feature": "Test-score policy",
+        "mean_abs_shift_points": 0.357
+      },
+      {
+        "feature": "Enrolment size band",
+        "mean_abs_shift_points": 0.33
+      },
+      {
+        "feature": "Institution control",
+        "mean_abs_shift_points": 0.231
+      },
+      {
+        "feature": "Test policy changed",
+        "mean_abs_shift_points": 0.03
+      }
+    ],
+    "seed_stability": [
+      {
+        "seed": 0,
+        "yield_mae_points": 5.34,
+        "yield_rmse_points": 10.72,
+        "yield_median_abs_error_points": 2.09,
+        "r2": 0.853
+      },
+      {
+        "seed": 1,
+        "yield_mae_points": 5.35,
+        "yield_rmse_points": 10.78,
+        "yield_median_abs_error_points": 2.03,
+        "r2": 0.852
+      },
+      {
+        "seed": 2,
+        "yield_mae_points": 5.33,
+        "yield_rmse_points": 10.81,
+        "yield_median_abs_error_points": 2.08,
+        "r2": 0.851
+      },
+      {
+        "seed": 3,
+        "yield_mae_points": 5.33,
+        "yield_rmse_points": 10.66,
+        "yield_median_abs_error_points": 2.12,
+        "r2": 0.855
+      },
+      {
+        "seed": 4,
+        "yield_mae_points": 5.4,
+        "yield_rmse_points": 10.81,
+        "yield_median_abs_error_points": 2.15,
+        "r2": 0.851
+      }
+    ],
+    "seed_mae_range_points": 0.07
+  }
+}

@@ -1,0 +1,48 @@
+artifact_path: file:///tmp/claude-0/-home-claude/1b10e3c4-b182-562f-8974-6ed18f610176/scratchpad/repo/mlruns/artifacts/models/m-ddb1716c83d34d43a2fe95fbf83c58a1/artifacts
+flavors:
+  python_function:
+    code: code
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: code
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types:
+    - collections.OrderedDict
+    - lightgbm.basic.Booster
+    - lightgbm.sklearn.LGBMRegressor
+    - numpy.dtype
+    - src.models.forecaster.YieldForecaster
+is_signature_from_type_hint: false
+mlflow_version: 3.16.1
+model_id: m-ddb1716c83d34d43a2fe95fbf83c58a1
+model_size_bytes: 1828613
+model_uuid: m-ddb1716c83d34d43a2fe95fbf83c58a1
+prompts: null
+run_id: 10ab2eae45d44ece86f66b52def0e6ae
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "YIELD_LAG1", "required": true}, {"type": "double",
+    "name": "ADMIT_RATE", "required": true}, {"type": "double", "name": "ADMIT_RATE_LAG1",
+    "required": true}, {"type": "double", "name": "APPLCN_CHANGE", "required": true},
+    {"type": "double", "name": "LOG_APPLCN", "required": true}, {"type": "double",
+    "name": "TEST_POLICY_CHANGED", "required": true}, {"type": "double", "name": "ADMCON7",
+    "required": true}, {"type": "double", "name": "CONTROL", "required": true}, {"type":
+    "double", "name": "INSTSIZE", "required": true}, {"type": "double", "name": "LOCALE",
+    "required": true}, {"type": "double", "name": "OBEREG", "required": true}, {"type":
+    "double", "name": "C21BASIC", "required": true}]'
+  outputs: '[{"type": "double", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-10-17 22:53:03.508113'

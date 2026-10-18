@@ -1,0 +1,6 @@
+candidate,cv_yield_mae_points,cv_worst_error_ratio,cv_ratio_HBCU,"cv_ratio_Under 1,000 students",cv_ratio_Private for-profit,holdout_yield_mae_points,holdout_ratio_HBCU,"holdout_ratio_Under 1,000 students",holdout_ratio_Private for-profit
+unmitigated,5.45,4.97,1.09,3.7,4.97,5.23,0.91,3.71,4.69
+group_reweighted,5.72,4.82,1.04,3.98,4.82,5.33,1.01,3.76,4.75
+bounded_group_loss_0.06,5.74,5.63,1.08,4.01,5.63,5.24,0.87,4.16,5.53
+bounded_group_loss_0.08,5.55,5.29,0.99,4.09,5.29,5.28,0.86,3.99,5.25
+bounded_group_loss_0.10,5.45,4.97,1.09,3.7,4.97,5.23,0.91,3.71,4.69

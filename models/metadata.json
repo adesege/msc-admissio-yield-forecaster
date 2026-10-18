@@ -1,0 +1,35 @@
+{
+  "model_version": "0.3.0",
+  "trained_at": "2026-10-17T22:54:42+00:00",
+  "features": [
+    "YIELD_LAG1",
+    "ADMIT_RATE",
+    "ADMIT_RATE_LAG1",
+    "APPLCN_CHANGE",
+    "LOG_APPLCN",
+    "TEST_POLICY_CHANGED",
+    "ADMCON7",
+    "CONTROL",
+    "INSTSIZE",
+    "LOCALE",
+    "OBEREG",
+    "C21BASIC"
+  ],
+  "numeric_features": [
+    "YIELD_LAG1",
+    "ADMIT_RATE",
+    "ADMIT_RATE_LAG1",
+    "APPLCN_CHANGE",
+    "LOG_APPLCN",
+    "TEST_POLICY_CHANGED"
+  ],
+  "target": "YIELD",
+  "train_cycle": 2023,
+  "change_model": "group_reweighted",
+  "family": "lightgbm",
+  "registered_model_version": 2,
+  "approved_for_release": false,
+  "holdout_yield_mae_points": 5.33,
+  "interval_coverage": 0.8,
+  "alert_threshold": -0.03
+}

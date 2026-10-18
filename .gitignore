@@ -3,7 +3,6 @@ __pycache__/
 .venv/
 .pytest_cache/
 .prefect/
-mlruns/
 data/interim/
 data/processed/*
 !data/processed/.gitkeep

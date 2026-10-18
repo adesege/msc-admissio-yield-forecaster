@@ -1,0 +1,103 @@
+{
+  "alert_threshold_points": -3.0,
+  "single_threshold": {
+    "overall": {
+      "institutions": 1852.0,
+      "actual_drop_rate": 0.248,
+      "alert_rate": 0.173,
+      "true_positive_rate": 0.407,
+      "false_positive_rate": 0.096,
+      "balanced_accuracy": 0.656
+    },
+    "by_group": [
+      {
+        "FAIRNESS_GROUP": "All other institutions",
+        "institutions": 1183.0,
+        "actual_drop_rate": 0.203,
+        "alert_rate": 0.107,
+        "true_positive_rate": 0.371,
+        "false_positive_rate": 0.039
+      },
+      {
+        "FAIRNESS_GROUP": "HBCU",
+        "institutions": 49.0,
+        "actual_drop_rate": 0.327,
+        "alert_rate": 0.224,
+        "true_positive_rate": 0.562,
+        "false_positive_rate": 0.061
+      },
+      {
+        "FAIRNESS_GROUP": "Private for-profit",
+        "institutions": 136.0,
+        "actual_drop_rate": 0.382,
+        "alert_rate": 0.368,
+        "true_positive_rate": 0.481,
+        "false_positive_rate": 0.298
+      },
+      {
+        "FAIRNESS_GROUP": "Under 1,000 students",
+        "institutions": 484.0,
+        "actual_drop_rate": 0.312,
+        "alert_rate": 0.277,
+        "true_positive_rate": 0.424,
+        "false_positive_rate": 0.21
+      }
+    ],
+    "summary": {
+      "demographic_parity_difference": 0.261,
+      "equalized_odds_difference": 0.258,
+      "disparate_impact_ratio": 0.29,
+      "meets_four_fifths_rule": false
+    }
+  },
+  "equalized_odds_thresholds": {
+    "overall": {
+      "institutions": 1852.0,
+      "actual_drop_rate": 0.248,
+      "alert_rate": 0.45,
+      "true_positive_rate": 0.623,
+      "false_positive_rate": 0.393,
+      "balanced_accuracy": 0.615
+    },
+    "by_group": [
+      {
+        "FAIRNESS_GROUP": "All other institutions",
+        "institutions": 1183.0,
+        "actual_drop_rate": 0.203,
+        "alert_rate": 0.44,
+        "true_positive_rate": 0.625,
+        "false_positive_rate": 0.392
+      },
+      {
+        "FAIRNESS_GROUP": "HBCU",
+        "institutions": 49.0,
+        "actual_drop_rate": 0.327,
+        "alert_rate": 0.531,
+        "true_positive_rate": 0.75,
+        "false_positive_rate": 0.424
+      },
+      {
+        "FAIRNESS_GROUP": "Private for-profit",
+        "institutions": 136.0,
+        "actual_drop_rate": 0.382,
+        "alert_rate": 0.537,
+        "true_positive_rate": 0.692,
+        "false_positive_rate": 0.44
+      },
+      {
+        "FAIRNESS_GROUP": "Under 1,000 students",
+        "institutions": 484.0,
+        "actual_drop_rate": 0.312,
+        "alert_rate": 0.442,
+        "true_positive_rate": 0.583,
+        "false_positive_rate": 0.378
+      }
+    ],
+    "summary": {
+      "demographic_parity_difference": 0.097,
+      "equalized_odds_difference": 0.167,
+      "disparate_impact_ratio": 0.819,
+      "meets_four_fifths_rule": true
+    }
+  }
+}
