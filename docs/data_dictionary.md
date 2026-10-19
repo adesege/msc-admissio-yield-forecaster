@@ -58,6 +58,19 @@ Preliminary schema for every source used by the Admissio Yield Forecaster. Raw I
 | `FUNNEL_COMPLETE` | Boolean | Applicants, admits and enrolled all reported, with admits above zero | Data-quality flag |
 | `FULL_YIELD_HISTORY` | Boolean | Usable yield in every year of the panel | Modelling eligibility |
 
+## Model features (`src/models/features.py`)
+
+| Field | Type | Definition | Role |
+|---|---|---|---|
+| `ADMIT_RATE` | Float | `ADMSSN / APPLCN` for the current cycle, known once offers are planned | Feature; counterfactual lever |
+| `ADMIT_RATE_LAG1` | Float | Previous cycle's admit rate | Feature |
+| `LOG_APPLCN` | Float | Natural log of one plus applicants | Feature |
+| `APPLCN_CHANGE` | Float | Year-on-year change in applicants, clipped to -0.9 and 3.0 | Feature |
+| `FAIRNESS_GROUP` | Text | Private for-profit, under 1,000 students, HBCU or all other institutions, assigned in that order | Mitigation weights, intervals and alert audit; never a feature |
+| Model target | Float | `YIELD - YIELD_LAG1`; the forecast adds it back to `YIELD_LAG1` | Learned change in yield |
+
+Columns measured on enrolled students (`ENRL*`, `SATNUM`, `SATPCT`, `ACTNUM`, `ACTPCT` and score percentiles) are rejected as features.
+
 ## Pipeline outputs (`data/processed/warehouse.duckdb`)
 
 | Table or view | Grain | Rows (2022 to 2024) | Purpose |
