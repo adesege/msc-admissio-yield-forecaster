@@ -1,0 +1,265 @@
+{
+  "model": {
+    "model_version": "0.3.0",
+    "trained_at": "2026-10-17T22:54:42+00:00",
+    "features": [
+      "YIELD_LAG1",
+      "ADMIT_RATE",
+      "ADMIT_RATE_LAG1",
+      "APPLCN_CHANGE",
+      "LOG_APPLCN",
+      "TEST_POLICY_CHANGED",
+      "ADMCON7",
+      "CONTROL",
+      "INSTSIZE",
+      "LOCALE",
+      "OBEREG",
+      "C21BASIC"
+    ],
+    "numeric_features": [
+      "YIELD_LAG1",
+      "ADMIT_RATE",
+      "ADMIT_RATE_LAG1",
+      "APPLCN_CHANGE",
+      "LOG_APPLCN",
+      "TEST_POLICY_CHANGED"
+    ],
+    "target": "YIELD",
+    "train_cycle": 2023,
+    "change_model": "group_reweighted",
+    "family": "lightgbm",
+    "registered_model_version": 2,
+    "approved_for_release": false,
+    "holdout_yield_mae_points": 5.33,
+    "interval_coverage": 0.8,
+    "alert_threshold": -0.03
+  },
+  "shap_base_change_points": -0.694,
+  "holdout": {
+    "baseline": {
+      "yield_mae_points": 5.99,
+      "yield_rmse_points": 12.82,
+      "yield_median_abs_error_points": 2.24,
+      "r2": 0.791,
+      "share_intake_missed_by_over_10pct": 0.511,
+      "share_intake_over_by_10pct": 0.356,
+      "share_intake_under_by_10pct": 0.156
+    },
+    "model": {
+      "yield_mae_points": 5.33,
+      "yield_rmse_points": 10.68,
+      "yield_median_abs_error_points": 2.13,
+      "r2": 0.855,
+      "share_intake_missed_by_over_10pct": 0.477,
+      "share_intake_over_by_10pct": 0.284,
+      "share_intake_under_by_10pct": 0.194
+    }
+  },
+  "sampling_noise_points": {
+    "All other institutions": 0.61,
+    "HBCU": 0.42,
+    "Private for-profit": 3.24,
+    "Under 1,000 students": 1.85
+  },
+  "examples": {
+    "HBCU": "163453",
+    "Small for-profit": "442426",
+    "Large public": "145600"
+  },
+  "representation": [
+    {
+      "dimension": "HBCU_GROUP",
+      "group": "HBCU",
+      "source_rows": 192,
+      "retention_rate": 0.969,
+      "modelling_rows": 186,
+      "source_share": 0.032,
+      "modelling_share": 0.033,
+      "representation_ratio": 1.03,
+      "status": "ok"
+    },
+    {
+      "dimension": "HBCU_GROUP",
+      "group": "Not HBCU",
+      "source_rows": 5716,
+      "retention_rate": 0.939,
+      "modelling_rows": 5370,
+      "source_share": 0.968,
+      "modelling_share": 0.967,
+      "representation_ratio": 0.999,
+      "status": "ok"
+    },
+    {
+      "dimension": "SIZE_GROUP",
+      "group": "1,000-4,999",
+      "source_rows": 2233,
+      "retention_rate": 0.979,
+      "modelling_rows": 2187,
+      "source_share": 0.38,
+      "modelling_share": 0.394,
+      "representation_ratio": 1.036,
+      "status": "ok"
+    },
+    {
+      "dimension": "SIZE_GROUP",
+      "group": "10,000-19,999",
+      "source_rows": 473,
+      "retention_rate": 0.989,
+      "modelling_rows": 468,
+      "source_share": 0.08,
+      "modelling_share": 0.084,
+      "representation_ratio": 1.047,
+      "status": "ok"
+    },
+    {
+      "dimension": "SIZE_GROUP",
+      "group": "20,000 and above",
+      "source_rows": 447,
+      "retention_rate": 1.0,
+      "modelling_rows": 447,
+      "source_share": 0.076,
+      "modelling_share": 0.08,
+      "representation_ratio": 1.058,
+      "status": "ok"
+    },
+    {
+      "dimension": "SIZE_GROUP",
+      "group": "5,000-9,999",
+      "source_rows": 672,
+      "retention_rate": 0.991,
+      "modelling_rows": 666,
+      "source_share": 0.114,
+      "modelling_share": 0.12,
+      "representation_ratio": 1.048,
+      "status": "ok"
+    },
+    {
+      "dimension": "SIZE_GROUP",
+      "group": "Under 1,000",
+      "source_rows": 2052,
+      "retention_rate": 0.871,
+      "modelling_rows": 1788,
+      "source_share": 0.349,
+      "modelling_share": 0.322,
+      "representation_ratio": 0.922,
+      "status": "ok"
+    },
+    {
+      "dimension": "CONTROL_GROUP",
+      "group": "Private for-profit",
+      "source_rows": 525,
+      "retention_rate": 0.777,
+      "modelling_rows": 408,
+      "source_share": 0.089,
+      "modelling_share": 0.073,
+      "representation_ratio": 0.826,
+      "status": "under-represented"
+    },
+    {
+      "dimension": "CONTROL_GROUP",
+      "group": "Private nonprofit",
+      "source_rows": 3550,
+      "retention_rate": 0.95,
+      "modelling_rows": 3372,
+      "source_share": 0.601,
+      "modelling_share": 0.607,
+      "representation_ratio": 1.01,
+      "status": "ok"
+    },
+    {
+      "dimension": "CONTROL_GROUP",
+      "group": "Public",
+      "source_rows": 1833,
+      "retention_rate": 0.969,
+      "modelling_rows": 1776,
+      "source_share": 0.31,
+      "modelling_share": 0.32,
+      "representation_ratio": 1.03,
+      "status": "ok"
+    },
+    {
+      "dimension": "TRIBAL_GROUP",
+      "group": "Not tribal college",
+      "source_rows": 5902,
+      "retention_rate": 0.94,
+      "modelling_rows": 5550,
+      "source_share": 0.999,
+      "modelling_share": 0.999,
+      "representation_ratio": 1.0,
+      "status": "ok"
+    },
+    {
+      "dimension": "TRIBAL_GROUP",
+      "group": "Tribal college",
+      "source_rows": 6,
+      "retention_rate": 1.0,
+      "modelling_rows": 6,
+      "source_share": 0.001,
+      "modelling_share": 0.001,
+      "representation_ratio": 1.063,
+      "status": "unassessed: fewer than 30 rows"
+    }
+  ],
+  "mitigation_scores": [
+    {
+      "candidate": "unmitigated",
+      "cv_yield_mae_points": 5.45,
+      "cv_worst_error_ratio": 4.97,
+      "cv_ratio_HBCU": 1.09,
+      "cv_ratio_Under 1,000 students": 3.7,
+      "cv_ratio_Private for-profit": 4.97,
+      "holdout_yield_mae_points": 5.23,
+      "holdout_ratio_HBCU": 0.91,
+      "holdout_ratio_Under 1,000 students": 3.71,
+      "holdout_ratio_Private for-profit": 4.69
+    },
+    {
+      "candidate": "group_reweighted",
+      "cv_yield_mae_points": 5.72,
+      "cv_worst_error_ratio": 4.82,
+      "cv_ratio_HBCU": 1.04,
+      "cv_ratio_Under 1,000 students": 3.98,
+      "cv_ratio_Private for-profit": 4.82,
+      "holdout_yield_mae_points": 5.33,
+      "holdout_ratio_HBCU": 1.01,
+      "holdout_ratio_Under 1,000 students": 3.76,
+      "holdout_ratio_Private for-profit": 4.75
+    },
+    {
+      "candidate": "bounded_group_loss_0.06",
+      "cv_yield_mae_points": 5.74,
+      "cv_worst_error_ratio": 5.63,
+      "cv_ratio_HBCU": 1.08,
+      "cv_ratio_Under 1,000 students": 4.01,
+      "cv_ratio_Private for-profit": 5.63,
+      "holdout_yield_mae_points": 5.24,
+      "holdout_ratio_HBCU": 0.87,
+      "holdout_ratio_Under 1,000 students": 4.16,
+      "holdout_ratio_Private for-profit": 5.53
+    },
+    {
+      "candidate": "bounded_group_loss_0.08",
+      "cv_yield_mae_points": 5.55,
+      "cv_worst_error_ratio": 5.29,
+      "cv_ratio_HBCU": 0.99,
+      "cv_ratio_Under 1,000 students": 4.09,
+      "cv_ratio_Private for-profit": 5.29,
+      "holdout_yield_mae_points": 5.28,
+      "holdout_ratio_HBCU": 0.86,
+      "holdout_ratio_Under 1,000 students": 3.99,
+      "holdout_ratio_Private for-profit": 5.25
+    },
+    {
+      "candidate": "bounded_group_loss_0.10",
+      "cv_yield_mae_points": 5.45,
+      "cv_worst_error_ratio": 4.97,
+      "cv_ratio_HBCU": 1.09,
+      "cv_ratio_Under 1,000 students": 3.7,
+      "cv_ratio_Private for-profit": 4.97,
+      "holdout_yield_mae_points": 5.23,
+      "holdout_ratio_HBCU": 0.91,
+      "holdout_ratio_Under 1,000 students": 3.71,
+      "holdout_ratio_Private for-profit": 4.69
+    }
+  ]
+}
