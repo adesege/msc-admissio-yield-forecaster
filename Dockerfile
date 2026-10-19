@@ -21,6 +21,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY --chown=pipeline:pipeline src ./src
+COPY --chown=pipeline:pipeline api ./api
 COPY --chown=pipeline:pipeline tests ./tests
 COPY --chown=pipeline:pipeline data/raw ./data/raw
 
