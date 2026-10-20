@@ -1,0 +1,11 @@
+streamlit==1.66.0
+plotly==7.1.0
+pandas==3.0.6
+numpy==2.5.3
+pyarrow==25.0.1
+scikit-learn==1.9.1
+lightgbm==4.7.0
+joblib==1.6.0
+shap==0.52.0
+fairlearn==0.14.0
+fastapi==0.143.3
