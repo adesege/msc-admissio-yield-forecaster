@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here. The format follows Keep a Changelog, and model releases follow Semantic Versioning.
 
+## [0.4.0] - 2026-10-20
+
+### Added
+
+- Streamlit stakeholder dashboard with an overview, forecast explanations, what-if analysis, an ethical compliance view built on Fairlearn and a transparency page.
+- Dashboard data export of the 2024 hold-out cycle with forecasts, intervals, alerts and SHAP values.
+- API demo script that sends the presentation's sample institutions to `POST /predict`.
+- Dashboard tests, Streamlit page smoke tests and a CI job that installs only the dashboard requirements.
+- Streamlit Community Cloud configuration.
+
+### Changed
+
+- Module 5 roadmap delivers the Streamlit dashboard; the applicant demand forecast and offer planner move to the Final Project.
+
 ## [0.3.0] - 2026-10-17
 
 ### Added

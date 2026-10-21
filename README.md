@@ -14,6 +14,7 @@ msc-admissio-yield-forecaster/
 ├── mlruns/        # MLflow tracking store and model registry (SQLite plus artifacts)
 ├── models/        # serialised forecaster, SHAP background sample and metadata
 ├── notebooks/     # SHAP analysis notebook
+├── scripts/       # API demo
 ├── src/
 │   ├── ingest/      # landing with checksums, IPEDS readers
 │   ├── cleaning/    # deduplication, quarantine, reserved-code handling
@@ -25,8 +26,9 @@ msc-admissio-yield-forecaster/
 │   ├── pipeline/    # Prefect flow, DuckDB warehouse, lineage
 │   ├── models/      # features, tuning, mitigation, forecaster, training and MLflow registry
 │   └── explain/     # SHAP, LIME, counterfactuals, sensitivity analysis and figures
-├── dashboard/     # React front end served by Cloudflare Workers
+├── dashboard/     # Streamlit stakeholder dashboard, its data export and slim requirements
 ├── tests/         # pytest suite
+├── .streamlit/    # dashboard theme
 ├── Dockerfile     # pipeline image
 ├── Dockerfile.api # API image
 ├── CHANGELOG.md
@@ -73,7 +75,7 @@ docker run --rm \
   admissio-pipeline
 ```
 
-Run the tests inside the image with `docker run --rm admissio-pipeline python -m pytest -q`.
+Run the tests inside the image with `docker run --rm admissio-pipeline python -m pytest -q --ignore-glob='tests/test_dashboard*'`.
 
 ## Reproduce the baseline
 
@@ -120,15 +122,37 @@ curl -X POST 127.0.0.1:8000/predict -H "content-type: application/json" -d '{
 
 The response holds the forecast yield, its 80% interval, expected enrolment, the yield-drop alert, the fairness group and the three largest SHAP drivers. `GET /health` reports the model version and release status. Build the container with `docker build --file Dockerfile.api --tag admissio-api .`.
 
+With the API running, send the three sample institutions from the stakeholder presentation and print each forecast in plain language:
+
+```bash
+python -m scripts.api_demo
+```
+
+## Explore the dashboard
+
+Live dashboard: https://msc-admissio-yield-forecaster.streamlit.app, deployed on Streamlit Community Cloud from dashboard/app.py.
+
+The Streamlit dashboard presents the forecaster to admissions leaders and the Ethics Review Panel. It has five pages: an overview of results against the last-year baseline, forecast explanations for any 2024 test institution, what-if analysis of offers, applications and test policy, an ethical compliance view that recomputes the fairness metrics with Fairlearn, and the model's transparency statement. Every forecast goes through the same `forecast()` function that serves `POST /predict`.
+
+```bash
+streamlit run dashboard/app.py
+```
+
+The dashboard reads `dashboard/data/`, a snapshot of the 2024 hold-out cycle with forecasts, intervals, alerts and SHAP values. Refresh it after retraining:
+
+```bash
+python -m dashboard.build_data
+```
+
 ## Roadmap
 
-| Sprint | Course module | Deliverable                                                                                                             |
-| ------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| 1      | Module 2      | Project plan, architecture, repository, data dictionary, RAID log                                                       |
-| 2      | Module 3      | Prefect pipeline, Great Expectations suites, bias detection, anonymisation, governance, audit log, Docker image         |
-| 3      | Module 4      | Yield forecaster, MLflow registry, SHAP, LIME, counterfactual and fairness analysis, model card, FastAPI service        |
-| 4      | Module 5      | Applicant demand forecast, offer planner, forecast API on Cloudflare Workers, React dashboard, stakeholder presentation |
-| 5      | Final Project | Deployed, monitored release                                                                                             |
+| Sprint | Course module | Deliverable                                                                                                      |
+| ------ | ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1      | Module 2      | Project plan, architecture, repository, data dictionary, RAID log                                                |
+| 2      | Module 3      | Prefect pipeline, Great Expectations suites, bias detection, anonymisation, governance, audit log, Docker image  |
+| 3      | Module 4      | Yield forecaster, MLflow registry, SHAP, LIME, counterfactual and fairness analysis, model card, FastAPI service |
+| 4      | Module 5      | Streamlit stakeholder dashboard with ethical compliance view, API demo, stakeholder presentation                 |
+| 5      | Final Project | Applicant demand forecast, offer planner, deployed and monitored release                                         |
 
 ## Governance
 
