@@ -65,10 +65,15 @@ SHAP_COLUMNS = [f"shap_{feature}" for feature in FEATURES]
 LABEL_TO_FEATURE = {label: feature for feature, label in FEATURE_LABELS.items()}
 
 
+PLANNER_POINTS = 200
+PLANNER_OVERRUN_RISK = 0.10
+
+
 @dataclass(frozen=True)
 class DashboardData:
     holdout: pd.DataFrame
     summary: dict
+    train_reference: pd.DataFrame
 
     def institution(self, unitid: str) -> pd.Series:
         return self.holdout.loc[self.holdout["unitid"] == unitid].iloc[0]
@@ -81,6 +86,7 @@ def load_dashboard_data(directory: Path = DATA_DIR) -> DashboardData:
     return DashboardData(
         holdout=pd.read_parquet(directory / "holdout.parquet"),
         summary=json.loads((directory / "summary.json").read_text()),
+        train_reference=pd.read_parquet(directory / "train_reference.parquet"),
     )
 
 
@@ -120,6 +126,17 @@ def enrollment_curve(model: LoadedModel, cycle: InstitutionCycle, offer_counts) 
             "enrolled_upper": offers * interval["upper"].to_numpy(),
         }
     )
+
+
+def offer_plan(model: LoadedModel, cycle: InstitutionCycle, capacity: int) -> tuple[pd.DataFrame, pd.Series | None]:
+    counts = np.unique(np.linspace(max(1, cycle.applicants * 0.02), cycle.applicants, PLANNER_POINTS).astype(int))
+    curve = enrollment_curve(model, cycle, counts)
+    safe = curve[curve["enrolled_upper"] <= capacity]
+    return curve, (safe.iloc[-1] if len(safe) else None)
+
+
+def explanation_frame(row: pd.Series) -> pd.DataFrame:
+    return to_frame(cycle_from_row(row)).assign(APPLCN=float(row["applicants"]))
 
 
 def describe_value(feature: str, value: float | None) -> str:

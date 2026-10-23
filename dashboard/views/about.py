@@ -3,6 +3,8 @@ import streamlit as st
 from dashboard.session import dashboard_data, release_banner
 
 REPOSITORY = "https://github.com/adesege/msc-admissio-yield-forecaster"
+MONITORING = "https://adesege.github.io/msc-admissio-yield-forecaster/"
+API_DOCS = "https://admissio-yield-api.onrender.com/docs"
 
 data = dashboard_data()
 metadata = data.summary["model"]
@@ -64,7 +66,18 @@ st.markdown(
     "files for 2022 to 2024 and the 2023 institutional directory. All figures are institution totals."
 )
 
+st.subheader("Monitoring and accountability")
+st.markdown(
+    f"""
+Each cycle the model is checked for input drift, accuracy, fairness by group, interval coverage and false alarms
+against the thresholds in the model card. Results are published on the [monitoring dashboard]({MONITORING}). A red
+signal opens an incident for the Ethics Review Panel, and every forecast served by the
+[public API]({API_DOCS}) is stored with its explanation so it can be audited later.
+    """
+)
+
 st.markdown(
     f"Documentation: [model card]({REPOSITORY}/blob/main/docs/model_card.md), "
-    f"[fairness report]({REPOSITORY}/blob/main/docs/fairness_report.md), [source code]({REPOSITORY})."
+    f"[fairness report]({REPOSITORY}/blob/main/docs/fairness_report.md), "
+    f"[ethical AI framework]({REPOSITORY}/blob/main/docs/ethical_ai_framework.md), [source code]({REPOSITORY})."
 )

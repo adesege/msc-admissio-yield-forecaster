@@ -15,6 +15,7 @@ from src.models.dataset import load_model_ready_panel, prepare_modelling_data
 from src.models.evaluation import intake_metrics, regression_metrics, sampling_noise_points
 from src.models.features import FEATURES, fairness_group
 from src.models.tracking import configure_tracking
+from src.planning.offers import plan_evaluation, plan_offers
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 REGISTERED_MODEL = "admissio-yield"
@@ -79,6 +80,12 @@ def registered_mitigation_scores() -> list[dict]:
     return pd.read_csv(path).round(3).to_dict(orient="records")
 
 
+def planner_summary(model, test: pd.DataFrame) -> list[dict]:
+    capacity = test["ENRLT"].astype(float)
+    plans = plan_offers(model.forecaster, test, capacity)
+    return plan_evaluation(model.forecaster, test, plans, capacity).reset_index(names="group").to_dict(orient="records")
+
+
 def summary(model, test: pd.DataFrame, table: pd.DataFrame, examples: dict, representation: pd.DataFrame) -> dict:
     base_value = shap_explanation(model.forecaster, test.head(1), model.background).base_values[0]
     return {
@@ -93,6 +100,7 @@ def summary(model, test: pd.DataFrame, table: pd.DataFrame, examples: dict, repr
         "examples": {label: str(int(row["UNITID"].iloc[0])) for label, row in examples.items()},
         "representation": representation.round(3).to_dict(orient="records"),
         "mitigation_scores": registered_mitigation_scores(),
+        "offer_planner": planner_summary(model, test),
     }
 
 
@@ -112,6 +120,7 @@ def main() -> None:
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     table.to_parquet(DATA_DIR / "holdout.parquet", index=False)
+    data.train[FEATURES + ["YIELD"]].to_parquet(DATA_DIR / "train_reference.parquet", index=False)
     (DATA_DIR / "summary.json").write_text(
         json.dumps(summary(model, data.test, table, examples, representation), indent=2, default=str)
     )

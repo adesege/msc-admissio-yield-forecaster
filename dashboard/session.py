@@ -2,7 +2,9 @@ import pandas as pd
 import streamlit as st
 
 from api.main import LoadedModel, load_model
-from dashboard.core import DashboardData, load_dashboard_data
+from dashboard.core import DashboardData, explanation_frame, load_dashboard_data
+from src.explain.counterfactuals import counterfactual_offers
+from src.explain.local import LocalExplainer
 
 SELECTED_KEY = "selected_unitid"
 RELEASE_NOTICE = (
@@ -19,6 +21,24 @@ def model() -> LoadedModel:
 @st.cache_data
 def dashboard_data() -> DashboardData:
     return load_dashboard_data()
+
+
+@st.cache_resource
+def lime_explainer() -> LocalExplainer:
+    return LocalExplainer(model().forecaster, dashboard_data().train_reference)
+
+
+@st.cache_data(show_spinner="Running LIME on 5,000 nearby scenarios")
+def lime_explanation(unitid: str) -> dict:
+    data = dashboard_data()
+    return lime_explainer().explain(explanation_frame(data.institution(unitid)))
+
+
+@st.cache_data(show_spinner="Searching for offer volumes that reach the target")
+def counterfactuals(unitid: str, low: float, high: float) -> pd.DataFrame:
+    data = dashboard_data()
+    return counterfactual_offers(model().forecaster, data.train_reference, explanation_frame(data.institution(unitid)),
+                                 (low, high))
 
 
 def release_banner() -> None:

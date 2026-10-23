@@ -3,7 +3,8 @@ import streamlit as st
 from api.main import forecast
 from dashboard import charts
 from dashboard.core import contributions, cycle_from_row, driver_sentence, forecast_summary, global_importance
-from dashboard.session import dashboard_data, institution_picker, model, percent, release_banner
+from dashboard.session import (counterfactuals, dashboard_data, institution_picker, lime_explanation, model, percent,
+                               release_banner)
 
 data = dashboard_data()
 
@@ -38,17 +39,61 @@ if result.fairness_group != "All other institutions":
         "accurate forecasts are for the group.", icon=":material/balance:",
     )
 
-st.subheader("What drove the forecast")
-st.markdown("\n".join(f"- {driver_sentence(driver)}" for driver in result.top_drivers))
-st.plotly_chart(charts.driver_contributions(contributions(row)), width="stretch", theme=None)
-st.caption(
-    "Blue bars pushed the forecast up and red bars pushed it down, measured against the average change across all "
-    "institutions. The patterns come from past data and show association, not cause."
-)
+shap_tab, lime_tab, counterfactual_tab = st.tabs(["What drove the forecast (SHAP)", "Second opinion (LIME)",
+                                                  "What would change the outcome"])
 
-with st.expander("Which inputs matter most across all institutions"):
-    st.plotly_chart(charts.global_drivers(global_importance(data.holdout)), width="stretch", theme=None)
+with shap_tab:
+    st.markdown("\n".join(f"- {driver_sentence(driver)}" for driver in result.top_drivers))
+    st.plotly_chart(charts.driver_contributions(contributions(row)), width="stretch", theme=None)
     st.caption(
-        "Average size of each input's effect on the 2024 forecasts. Last year's yield and the movement in "
-        "applications matter most; the type and location of an institution matter far less."
+        "Blue bars pushed the forecast up and red bars pushed it down, measured against the average change across all "
+        "institutions. The patterns come from past data and show association, not cause."
     )
+    with st.expander("Which inputs matter most across all institutions"):
+        st.plotly_chart(charts.global_drivers(global_importance(data.holdout)), width="stretch", theme=None)
+        st.caption(
+            "Average size of each input's effect on the 2024 forecasts. Last year's yield and the movement in "
+            "applications matter most; the type and location of an institution matter far less."
+        )
+
+with lime_tab:
+    st.markdown(
+        "LIME fits a simple model to thousands of small variations of this institution's inputs. When its leading "
+        "inputs agree with the SHAP drivers, the explanation is more trustworthy."
+    )
+    if st.button("Run LIME for this institution", key=f"lime_{row['unitid']}"):
+        lime = lime_explanation(row["unitid"])
+        st.plotly_chart(charts.lime_weights(lime["weights"]), width="stretch", theme=None)
+        fit = lime["local_model_r2"]
+        st.caption(
+            f"The local model explains {fit:.0%} of the variation in the forecaster's output around this institution. "
+            + ("A low share means the explanation is a rough guide only." if fit < 0.5 else
+               "The local approximation is reasonable.")
+        )
+
+with counterfactual_tab:
+    last_yield = float(row["last_cycle_yield"])
+    st.markdown(
+        f"Which admit rates would keep this institution's yield at or above last cycle's {percent(last_yield, 1)}? "
+        "DiCE varies only the admit rate, the one input the institution controls before deposits arrive."
+    )
+    if st.button("Find alternative offer volumes", key=f"cf_{row['unitid']}"):
+        options = counterfactuals(row["unitid"], last_yield, min(1.0, last_yield + 0.05))
+        if options.empty:
+            st.info("No admit rate between 5% and 100% brings the forecast into that range.", icon=":material/info:")
+        else:
+            st.dataframe(
+                options.assign(
+                    admit_rate=options["ADMIT_RATE"].map(lambda v: f"{v:.0%}"),
+                    forecast=options["forecast_yield"].map(lambda v: f"{v:.1%}"),
+                    offer_count=options["offers"].map(lambda v: f"{v:,}"),
+                    students=options["implied_enrolled"].map(lambda v: f"{v:,}"),
+                )[["admit_rate", "offer_count", "forecast", "students"]].rename(columns={
+                    "admit_rate": "Admit rate", "offer_count": "Offers", "forecast": "Forecast yield",
+                    "students": "Implied new students"}),
+                hide_index=True, width="stretch",
+            )
+            st.caption(
+                f"As reported, {int(row['offers']):,} offers were made. Fewer offers raise the forecast yield but bring "
+                "fewer students in total. The options describe the model's behaviour, not a proven response."
+            )

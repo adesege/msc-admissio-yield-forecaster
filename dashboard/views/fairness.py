@@ -36,7 +36,7 @@ st.caption(
 release_banner()
 
 errors, ranges, alerts, representation, mitigation = st.tabs(
-    ["Forecast accuracy by group", "Honest ranges", "Yield-drop alert", "Data representation", "Mitigation tested"]
+    ["Forecast accuracy by group", "Forecast ranges", "Yield-drop alert", "Data representation", "Mitigation tested"]
 )
 
 with errors:

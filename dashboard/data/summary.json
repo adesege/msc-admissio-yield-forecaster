@@ -261,5 +261,62 @@
       "holdout_ratio_Under 1,000 students": 3.71,
       "holdout_ratio_Private for-profit": 4.69
     }
+  ],
+  "offer_planner": [
+    {
+      "group": "All institutions",
+      "institutions": 1852.0,
+      "feasible_share": 0.998,
+      "planner_overrun_share": 0.072,
+      "naive_overrun_share": 0.332,
+      "planner_median_fill": 0.827,
+      "naive_median_fill": 0.98,
+      "planner_shortfall_share": 0.71,
+      "naive_shortfall_share": 0.208
+    },
+    {
+      "group": "All other institutions",
+      "institutions": 1183.0,
+      "feasible_share": 1.0,
+      "planner_overrun_share": 0.087,
+      "naive_overrun_share": 0.327,
+      "planner_median_fill": 0.842,
+      "naive_median_fill": 0.97,
+      "planner_shortfall_share": 0.718,
+      "naive_shortfall_share": 0.188
+    },
+    {
+      "group": "HBCU",
+      "institutions": 49.0,
+      "feasible_share": 1.0,
+      "planner_overrun_share": 0.082,
+      "naive_overrun_share": 0.327,
+      "planner_median_fill": 0.806,
+      "naive_median_fill": 0.946,
+      "planner_shortfall_share": 0.776,
+      "naive_shortfall_share": 0.347
+    },
+    {
+      "group": "Under 1,000 students",
+      "institutions": 484.0,
+      "feasible_share": 0.992,
+      "planner_overrun_share": 0.04,
+      "naive_overrun_share": 0.351,
+      "planner_median_fill": 0.73,
+      "naive_median_fill": 1.0,
+      "planner_shortfall_share": 0.685,
+      "naive_shortfall_share": 0.227
+    },
+    {
+      "group": "Private for-profit",
+      "institutions": 136.0,
+      "feasible_share": 1.0,
+      "planner_overrun_share": 0.051,
+      "naive_overrun_share": 0.309,
+      "planner_median_fill": 0.736,
+      "naive_median_fill": 1.0,
+      "planner_shortfall_share": 0.713,
+      "naive_shortfall_share": 0.272
+    }
   ]
 }

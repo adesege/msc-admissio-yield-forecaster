@@ -9,3 +9,7 @@ joblib==1.6.0
 shap==0.52.0
 fairlearn==0.14.0
 fastapi==0.143.3
+prometheus-client==0.26.0
+lime==0.2.0.1
+dice-ml==0.12
+raiutils==0.4.2

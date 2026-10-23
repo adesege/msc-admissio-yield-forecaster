@@ -63,5 +63,5 @@ st.caption(
 )
 st.info(
     "The scenarios show how the model's forecasts move. They are not evidence of how real enrollment would respond "
-    "to a change in offers, and the dashboard does not recommend an offer volume.", icon=":material/info:",
+    "to a change in offers. The Offer planner page sizes offers against the places available.", icon=":material/info:",
 )

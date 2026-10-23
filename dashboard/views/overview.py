@@ -53,7 +53,7 @@ with right:
     st.plotly_chart(charts.forecast_vs_actual(holdout), width="stretch", theme=None)
     st.caption("Points on the diagonal line were forecast exactly. Hover over a point to see the institution.")
 
-with st.expander("How the model works, in plain language", expanded=True):
+with st.expander("How the model works", expanded=True):
     st.markdown(
         """
 The forecaster starts from what happened last year: the share of admitted students who enrolled. It learns,

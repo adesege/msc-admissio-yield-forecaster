@@ -162,3 +162,49 @@ def alert_rates(by_group: pd.DataFrame) -> go.Figure:
     figure.update_xaxes(range=[0, 105])
     figure.update_yaxes(autorange="reversed")
     return _style(figure, 340, x_title="Percent of institutions")
+
+
+def lime_weights(weights: list[dict]) -> go.Figure:
+    shown = list(reversed(weights))
+    values = [w["weight_points"] for w in shown]
+    figure = go.Figure(
+        go.Bar(
+            y=[w["rule"] for w in shown], x=values, orientation="h",
+            marker_color=[RAISE_COLOR if v > 0 else LOWER_COLOR for v in values],
+            text=[f"{v:+.1f}" for v in values], textposition="outside",
+            hovertemplate="%{y}<br>Local weight: %{x:+.2f} points<extra></extra>",
+        )
+    )
+    return _room_for_labels(_style(figure, 320, x_title="Weight in the local LIME model (points of yield)"))
+
+
+def offer_plan_curve(curve: pd.DataFrame, capacity: int, planned: float | None, reported: int) -> go.Figure:
+    figure = go.Figure()
+    figure.add_scatter(x=curve["offers"], y=curve["enrolled_upper"], mode="lines", line={"width": 0},
+                       showlegend=False, hoverinfo="skip")
+    figure.add_scatter(x=curve["offers"], y=curve["enrolled_lower"], mode="lines", line={"width": 0},
+                       fill="tonexty", fillcolor="rgba(42,120,214,0.15)", name="80% range", hoverinfo="skip")
+    figure.add_scatter(x=curve["offers"], y=curve["expected_enrolled"], mode="lines", name="Expected new students",
+                       line={"color": MODEL_COLOR, "width": 2.5},
+                       hovertemplate="%{x:,} offers<br>%{y:,.0f} expected<extra></extra>")
+    figure.add_hline(y=capacity, line={"color": LIMIT_COLOR, "dash": "dash", "width": 1},
+                     annotation_text=f"Capacity {capacity:,}", annotation_position="top left")
+    figure.add_vline(x=reported, line={"color": BASELINE_COLOR, "dash": "dot", "width": 1},
+                     annotation_text="Offers made", annotation_position="bottom right")
+    if planned is not None:
+        figure.add_vline(x=planned, line={"color": "#eb6834", "width": 2},
+                         annotation_text="Planned offers", annotation_position="top right")
+    return _style(figure, 420, x_title="Offers made", y_title="New students")
+
+
+def planner_backtest(rows: pd.DataFrame) -> go.Figure:
+    figure = go.Figure()
+    for column, name, color in (("naive_overrun_share", "Last year's yield carried forward", BASELINE_COLOR),
+                                ("planner_overrun_share", "Offer planner", "#eb6834")):
+        figure.add_bar(y=rows["group"], x=100 * rows[column], orientation="h", name=name, marker_color=color,
+                       text=[f"{100 * v:.0f}%" for v in rows[column]], textposition="outside",
+                       hovertemplate="%{y}<br>" + name + ": %{x:.1f}%<extra></extra>")
+    figure.add_vline(x=10, line={"color": LIMIT_COLOR, "dash": "dash", "width": 1},
+                     annotation_text="Goal 10%", annotation_position="bottom right")
+    figure.update_yaxes(autorange="reversed")
+    return _room_for_labels(_style(figure, 340, x_title="Institutions over capacity in the 2024 replay (%)"))

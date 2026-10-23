@@ -13,6 +13,7 @@ navigation = st.navigation(
         st.Page("views/overview.py", title="Overview", icon=":material/dashboard:", default=True),
         st.Page("views/explain.py", title="Explain a forecast", icon=":material/search_insights:"),
         st.Page("views/what_if.py", title="What-if analysis", icon=":material/tune:"),
+        st.Page("views/planner.py", title="Offer planner", icon=":material/event_seat:"),
         st.Page("views/fairness.py", title="Ethical compliance", icon=":material/balance:"),
         st.Page("views/about.py", title="About the model", icon=":material/description:"),
     ]
