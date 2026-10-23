@@ -53,9 +53,21 @@ class Forecast(BaseModel):
     model_version: str
     approved_for_release: bool
     notice: str
+    request_id: str | None = Field(default=None, description="Key for the stored explanation at GET /explanations/{request_id}.")
 
 
 class Health(BaseModel):
     status: str
     model_version: str
     approved_for_release: bool
+
+
+class StoredExplanation(BaseModel):
+    request_id: str
+    created_at: str
+    model_version: str
+    institution_id: str | None
+    fairness_group: str
+    inputs: dict
+    forecast: dict
+    record_hash: str

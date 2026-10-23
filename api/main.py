@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -7,15 +8,19 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import RedirectResponse
 
-from api.schemas import Forecast, Health, InstitutionCycle, Interval
+from api.explanations import ExplanationStore
+from api.metrics import metrics_app, observe
+from api.schemas import Forecast, Health, InstitutionCycle, Interval, StoredExplanation
 from src.explain.shap_values import shap_explanation, top_drivers
 from src.models.features import APPLICANT_CHANGE_BOUNDS, FEATURES, fairness_group
 from src.models.forecaster import YieldForecaster
 
 DEFAULT_MODEL_DIR = Path(__file__).resolve().parents[1] / "models"
 ADVISORY_NOTICE = "Advisory forecast for admissions planning. Offer decisions stay with named institution staff."
+RETIRED_NOTICE = "The forecaster has been retired. Plan offers from institutional records and staff judgement."
 SIZE_LABELS = {1: "Under 1,000"}
 CONTROL_LABELS = {3: "Private for-profit"}
 
@@ -90,24 +95,51 @@ def forecast(model: LoadedModel, cycle: InstitutionCycle) -> Forecast:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.model = load_model()
+    app.state.explanations = ExplanationStore()
+    app.state.explanations.purge()
     yield
 
 
 app = FastAPI(
     title="Admissio Yield Forecaster",
-    version="0.3.0",
+    version="0.5.0",
     description="Institution-level enrolment yield forecasts with intervals and drivers.",
     lifespan=lifespan,
 )
+app.mount("/metrics", metrics_app)
+
+
+def is_retired(metadata: dict) -> bool:
+    return metadata.get("status") == "retired"
+
+
+@app.get("/", include_in_schema=False)
+def index() -> RedirectResponse:
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health", response_model=Health)
 def health(request: Request) -> Health:
     metadata = request.app.state.model.metadata
-    return Health(status="ok", model_version=metadata["model_version"],
+    return Health(status="retired" if is_retired(metadata) else "ok", model_version=metadata["model_version"],
                   approved_for_release=metadata["approved_for_release"])
 
 
 @app.post("/predict", response_model=Forecast)
 def predict(cycle: InstitutionCycle, request: Request) -> Forecast:
-    return forecast(request.app.state.model, cycle)
+    model = request.app.state.model
+    if is_retired(model.metadata):
+        raise HTTPException(status_code=410, detail=RETIRED_NOTICE)
+    started = time.perf_counter()
+    result = forecast(model, cycle)
+    observe(cycle, result, time.perf_counter() - started)
+    request_id = request.app.state.explanations.record(cycle, result)
+    return result.model_copy(update={"request_id": request_id})
+
+
+@app.get("/explanations/{request_id}", response_model=StoredExplanation)
+def explanation(request_id: str, request: Request) -> StoredExplanation:
+    stored = request.app.state.explanations.get(request_id)
+    if stored is None:
+        raise HTTPException(status_code=404, detail="No stored explanation with that request id.")
+    return StoredExplanation(**stored)

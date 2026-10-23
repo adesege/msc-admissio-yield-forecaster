@@ -86,3 +86,12 @@ datasets:
       pipeline_service: [append, delete]
       data_engineer: [read]
       ethics_review_panel: [read]
+
+  explanation_store:
+    classification: internal
+    description: Every forecast served by the API with its inputs, interval and drivers, hash-chained for audit
+    retention: {rule: max_age_days, days: 1095}
+    access:
+      pipeline_service: [append, delete]
+      analyst: [read]
+      ethics_review_panel: [read]
