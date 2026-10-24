@@ -9,3 +9,7 @@ reports
 logs
 docs
 dashboard
+site
+models/challenger
+models/archive
+mlruns

@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: admissio
+    folder: Admissio
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

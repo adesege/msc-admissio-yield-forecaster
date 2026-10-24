@@ -1,0 +1,101 @@
+name: admissio
+
+services:
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: admissio-pipeline
+    volumes:
+      - processed:/app/data/processed
+      - reports:/app/reports
+      - logs:/app/logs
+
+  mlflow:
+    image: admissio-pipeline
+    pull_policy: never
+    user: "0:0"
+    depends_on:
+      pipeline:
+        condition: service_started
+    command: >
+      mlflow ui --backend-store-uri sqlite:////app/mlruns/mlflow.db
+      --host 0.0.0.0 --port 5000 --allowed-hosts "*"
+    volumes:
+      - ./mlruns:/app/mlruns
+    ports:
+      - "5000:5000"
+
+  monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    image: admissio-monitor
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+    volumes:
+      - processed:/app/data/processed:ro
+      - reports:/app/reports
+      - ./models:/app/models:ro
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: admissio-api
+    depends_on:
+      monitor:
+        condition: service_healthy
+    volumes:
+      - logs:/app/logs
+      - reports:/app/reports:ro
+    ports:
+      - "8000:8000"
+
+  replay:
+    image: admissio-monitor
+    pull_policy: never
+    profiles: ["demo"]
+    depends_on:
+      api:
+        condition: service_healthy
+    command: ["python", "-m", "scripts.replay_holdout", "--url", "http://api:8000", "--limit", "500"]
+    volumes:
+      - ./dashboard/data:/app/dashboard/data:ro
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    depends_on:
+      - api
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    depends_on:
+      - prometheus
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/admissio.json
+    volumes:
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+
+volumes:
+  processed:
+  reports:
+  logs:

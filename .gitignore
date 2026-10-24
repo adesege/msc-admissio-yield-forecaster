@@ -10,3 +10,6 @@ reports/
 logs/
 .DS_Store
 output/processed
+site/
+models/challenger/
+models/archive/
