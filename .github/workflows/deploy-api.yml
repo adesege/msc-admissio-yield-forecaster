@@ -1,0 +1,35 @@
+name: deploy-api
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: true
+
+jobs:
+  render:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: render
+      url: ${{ vars.API_URL }}
+    steps:
+      - name: Trigger the Render deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: curl --silent --fail --request POST "${DEPLOY_HOOK}&ref=${COMMIT}"
+      - name: Wait for the new version
+        run: |
+          sleep 60
+          for attempt in $(seq 1 60); do
+            curl --silent --fail --max-time 90 "${{ vars.API_URL }}/health" && exit 0
+            sleep 15
+          done
+          echo "The API did not report healthy within 15 minutes."
+          exit 1

@@ -1,0 +1,74 @@
+name: monitoring
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: monitoring
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    outputs:
+      retrain_required: ${{ steps.decision.outputs.retrain_required }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m src.pipeline.flow
+      - run: python -m venv /tmp/monitor && /tmp/monitor/bin/pip install -r requirements-monitoring.txt
+      - run: /tmp/monitor/bin/python -m src.monitoring.run
+      - run: /tmp/monitor/bin/python -m src.monitoring.site --site-dir site
+      - id: decision
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          decision = json.load(open("reports/monitoring/summary.json"))["decision"]
+          for key in ("incident_required", "retrain_required"):
+              print(f"{key}={str(decision[key]).lower()}")
+          PY
+      - if: steps.decision.outputs.incident_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          /tmp/monitor/bin/python -m src.monitoring.site --incident-body incident.md
+          title="Monitoring: red signals on the yield forecaster"
+          gh label create incident --color d03b3b --description "Ethical or performance incident" 2>/dev/null || true
+          existing=$(gh issue list --state open --label incident --search "\"$title\" in:title" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file incident.md
+          else
+            gh issue create --title "$title" --label incident --body-file incident.md
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  publish:
+    needs: monitor
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  retrain:
+    needs: monitor
+    if: needs.monitor.outputs.retrain_required == 'true'
+    uses: ./.github/workflows/retrain.yml
