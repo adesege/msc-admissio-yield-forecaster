@@ -1,0 +1,29 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    ADMISSIO_ROOT=/app
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 1000 monitor
+
+WORKDIR /app
+
+COPY requirements-monitoring.txt .
+RUN pip install -r requirements-monitoring.txt
+
+COPY --chown=monitor:monitor src ./src
+COPY --chown=monitor:monitor scripts ./scripts
+
+RUN mkdir -p reports/monitoring site data/processed models && chown -R monitor:monitor /app
+
+USER monitor
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "python -m src.monitoring.run && python -m src.monitoring.site --site-dir site && python -m http.server 8080 --directory site"]
