@@ -24,6 +24,7 @@ The framework covers who may touch each dataset, for what purpose, and for how l
 | `partner_extract` | Confidential | read, anonymise, delete | none | none | none | write |
 | `partner_aggregates` | Internal | write, delete | read | read | read | none |
 | `audit_log` | Restricted | append, delete | read | none | read | none |
+| `explanation_store` | Internal | append, delete | none | read | read | none |
 
 A request outside this matrix raises `AccessDenied` and is still written to the audit log with the outcome `denied`.
 
@@ -35,6 +36,7 @@ A request outside this matrix raises `AccessDenied` and is still written to the 
 | `partner_extract` | Delete at the end of every run | Applicant-level personal data is needed only long enough to aggregate it |
 | `yield_panel`, `quarantine`, `public_funnel`, `partner_aggregates`, `representation_report` | Keep the latest two versions | One current release and one for rollback |
 | `audit_log` | Delete after 1,095 days (three years) | Long enough to answer a partner or regulator query about any training cycle |
+| `explanation_store` | Delete after 1,095 days (three years), applied each time the API starts | Long enough to explain any forecast a partner acted on during the same period |
 
 Retention runs as the last task of every pipeline run, and each deletion is itself logged.
 

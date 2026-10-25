@@ -44,7 +44,7 @@ Features: last cycle's yield, admit rate this cycle and last cycle, change in ap
 | Yield RMSE | 12.82 points | 10.68 points | Not set | |
 | R² | 0.791 | 0.855 | Not set | |
 | Institutions with intake missed by more than 10% | 51.1% | 47.7% | Lower than baseline | Yes |
-| 80% interval coverage | Not modelled | 80.5% | 80% | Yes |
+| 80% interval coverage | Not modelled | 80.5% | 75% to 85% in every group | Yes |
 
 Cross-validated MAE on the 2023 cycle was 5.72 points. Retraining with five random seeds moved hold-out MAE by 0.07 points.
 
@@ -56,7 +56,7 @@ Cross-validated MAE on the 2023 cycle was 5.72 points. Retraining with five rand
 | Under 1,000 students | 596 | 3.76 | 2.71 | 1.25 | 10.93 | 11.73 |
 | Private for-profit | 136 | 4.75 | 3.81 | 1.25 | 13.44 | 14.02 |
 
-The model closes the HBCU gap and lowers absolute error for every monitored group. The ratios for small and for-profit institutions still breach the 1.25 limit because errors fall faster for large institutions. Median binomial sampling noise in yield is 3.24 points for for-profit institutions and 1.85 points for small institutions, against 0.61 points for other institutions, so part of the gap cannot be removed by any model. Intervals are calibrated by group so that each group receives honest uncertainty: 80% intervals are about 45 points wide for for-profit institutions and 36 points for small institutions, against 7 points elsewhere.
+The model closes the HBCU gap and lowers absolute error for every monitored group. The ratios for small and for-profit institutions still breach the 1.25 limit because errors fall faster for large institutions. Median binomial sampling noise in yield is 3.24 points for for-profit institutions and 1.85 points for small institutions, against 0.61 points for other institutions, so part of the gap cannot be removed by any model. Intervals are calibrated by group, so 80% intervals are about 45 points wide for for-profit institutions and 36 points for small institutions, against 7 points elsewhere.
 
 The yield-drop alert (forecast fall of 3 points or more) fails the four-fifths rule with a disparate impact ratio of 0.29, mostly because small and for-profit institutions see more real drops and more false alarms. Equalized-odds thresholds raise the ratio to 0.82 but quadruple the false-alarm rate, so they are documented and not deployed. Full results are in `docs/fairness_report.md`.
 
@@ -79,7 +79,17 @@ Every forecast returns its three largest SHAP contributions. Last cycle's yield,
 4. 80% interval coverage between 75% and 85% for every monitored group.
 5. Written approval from the Ethics Review Panel recorded as the `release_status` tag in the registry.
 
+## Offer planner
+
+The planner turns the forecast into a recommended offer volume: the largest number of offers whose upper 80% bound on intake stays within the places available, which holds the modelled chance of exceeding capacity to about 10%. Replayed on the 2024 cycle with capacity set to each institution's actual intake, it exceeded capacity at 7.2% of institutions against 33.2% when offers were sized from last year's yield, and stayed at or below 10% in every monitored group. The cost is caution: the typical institution filled 83% of its places against 98% under the simple rule, and wider intervals make the planner more cautious for small and for-profit institutions. The replay assumes each institution keeps its actual forecast error and that yield responds to offer volume only as the model expects.
+
+## Retraining
+
+`python -m src.models.retrain` refits this configuration on every available cycle and registers the result with the `challenger` alias. On the pooled 2023 and 2024 cycles the challenger reached a cross-validated MAE of 5.32 points, with error ratios of 0.89 (HBCU), 3.82 (under 1,000 students) and 5.40 (private for-profit), so it fails the same gates. Promotion needs Ethics Review Panel approval through `python -m src.models.lifecycle promote`.
+
 ## Monitoring after deployment
+
+Monitoring runs weekly and on every merge, and publishes to the monitoring dashboard at https://adesege.github.io/msc-admissio-yield-forecaster/. The full plan is in `docs/monitoring_plan.md`.
 
 | Signal | Trigger |
 |---|---|
@@ -88,4 +98,7 @@ Every forecast returns its three largest SHAP contributions. Last cycle's yield,
 | Median error ratio by group | Above the limit for two cycles in a row |
 | Interval coverage by group | Outside 70% to 90% |
 | Alert false-positive rate by group | Any group more than double the overall rate |
-| Share of requests with a missing input | Above 5% |
+| Share of rows or requests with a missing input | More than 5 points above the training cycle (8.3%, mostly Carnegie class) |
+| Offer planner overrun by group | Above 15% of institutions |
+
+Every forecast served by the API is stored with its inputs, interval and drivers in a hash-chained explanation store, retrievable at `GET /explanations/{request_id}`. On the 2024 cycle no input drifted (largest PSI 0.040) and MAE stayed at 5.33 points, but the small and for-profit error ratios and alert false-alarm multiples are red, which opens an incident for the Ethics Review Panel.

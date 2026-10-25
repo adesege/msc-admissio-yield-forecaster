@@ -43,7 +43,7 @@ Five candidates built on the tuned LightGBM model were scored with out-of-fold p
 
 Group reweighting gives each fairness group equal total weight in training. Bounded group loss uses Fairlearn's exponentiated gradient reduction; the bound of 0.10 never binds and reproduces the unmitigated model. Tighter bounds cannot be met because the for-profit group's error sits above them, so the reduction trades accuracy for no fairness gain. On the hold-out cycle the selected model costs 0.10 points of MAE against the unmitigated model and does not improve the ratios, which confirms that the remaining gap is driven by noise rather than by the model under-weighting small institutions.
 
-The mitigation that does work is honest uncertainty. Intervals are calibrated separately for each group from out-of-fold residuals:
+The mitigation that does work is group-calibrated uncertainty. Intervals are calibrated separately for each group from out-of-fold residuals:
 
 | Group | Interval half-width (points) | 2024 coverage | Median width (points) |
 |---|---|---|---|
