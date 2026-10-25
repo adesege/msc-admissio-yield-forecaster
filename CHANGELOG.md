@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here. The format follows Keep a Changelog, and model releases follow Semantic Versioning.
 
+## [0.5.0] - 2026-10-25
+
+### Added
+
+- Offer planner that sizes offers so the upper 80% bound on intake meets capacity, with a 2024 back-test and a dashboard page.
+- LIME and DiCE counterfactual tabs on the dashboard's forecast explanation page.
+- Monitoring job for input drift, performance, fairness by group, interval coverage, alert false alarms, representation and planner overrun, with Evidently reports and a static monitoring dashboard.
+- Hash-chained explanation store, `GET /explanations/{request_id}` and Prometheus metrics on the API.
+- Retraining on every available cycle with a challenger alias, and promote and retire commands.
+- Docker Compose stack with the pipeline, MLflow, monitoring, API, Prometheus and Grafana.
+- Render deployment of the API, and workflows for deployment, scheduled monitoring with GitHub Pages and incident issues, and retraining.
+- Ethical AI framework, algorithmic impact assessment, regulatory compliance report, public trust statement, monitoring plan, incident response plan and decommissioning plan.
+
+### Changed
+
+- Missing-input monitoring compares against the training cycle's share.
+- The API image installs only the packages it needs.
+
 ## [0.4.0] - 2026-10-20
 
 ### Added
